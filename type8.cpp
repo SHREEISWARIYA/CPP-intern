@@ -42,13 +42,22 @@ std::string charTo6BitBinary(char c) {
 
 // Function to convert a binary string to a hexadecimal string
 std::string binaryToHex(const std::string& binary) {
-    std::stringstream ss;
-    ss << std::hex << std::uppercase << std::setfill('0') << std::setw((binary.length() + 3) / 4);
-    for (size_t i = 0; i < binary.length(); i += 4) {
-        std::bitset<4> nibble(binary.substr(i, 4));
-        ss << nibble.to_ulong();
+    std::stringstream hexStream;
+    std::string hexChars = "0123456789ABCDEF";
+    
+    // Ensure the binary string is a multiple of 4 in length
+    std::string paddedBinary = binary;
+    while (paddedBinary.length() % 4 != 0) {
+        paddedBinary = '0' + paddedBinary;
     }
-    return ss.str();
+    
+    // Convert each 4-bit binary chunk to hexadecimal
+    for (std::size_t i = 0; i < paddedBinary.length(); i += 4) {
+        std::bitset<4> nibble(paddedBinary.substr(i, 4));
+        hexStream << hexChars[nibble.to_ulong()];
+    }
+    
+    return hexStream.str();
 }
 
 int main() {
@@ -151,7 +160,8 @@ int main() {
 
     // Extract the bits from the 55th position to the end and convert to hexadecimal
     if (continuousBinarySequence.length() > 55) {
-        std::string bitSegment = continuousBinarySequence.substr(55);  // Extract bits from 55 to end
+        std::string bitSegment = continuousBinarySequence.substr(55,continuousBinarySequence.length()); 
+        std::cout<<bitSegment<<std::endl; // Extract bits from 55 to end
         std::string hexValue = binaryToHex(bitSegment);  // Convert binary segment to hexadecimal
         std::cout << "\nData - Hexadecimal: " << hexValue << std::endl;
     } else {
